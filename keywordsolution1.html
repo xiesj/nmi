@@ -10,6 +10,9 @@
 			.hightlight-for-chatbot:active {
 				text-decoration-line: none;
 			}
+			.engt-launcher-button {
+				display: none !important;
+			}
 			#engt-div {
 				z-index: 2147483001;
 				font-weight: normal;
@@ -33,7 +36,7 @@
 					a), c.appendChild(n)
 			}(document, "https://app.engati.com", {
 				bot_key: "0534f362666246b9",
-				welcome_msg: true,
+				welcome_msg: false,
 				branding_key: "default",
 				server: "https://app.engati.com",
 				e: "p"
@@ -42,6 +45,7 @@
 		<script>
 			function openChatBot(type, disease) {
 				if (EngtChat) {
+					chatWidget.launchBot()
 					EngtChat.sendMessage({
 						"postback": "node_00B35C749F__DFF8557B12F14D97B33C508B580776B0||data_disease=" + disease,
 						"type": "postback",
