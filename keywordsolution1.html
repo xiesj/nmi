@@ -42,6 +42,7 @@
 		<script>
 			function openChatBot(type, disease) {
 				if (EngtChat) {
+					EngtChat.open()
 					EngtChat.sendMessage({
 						"postback": "node_00B35C749F__DFF8557B12F14D97B33C508B580776B0||data_disease=" + disease,
 						"type": "postback",
