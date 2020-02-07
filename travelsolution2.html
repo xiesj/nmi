@@ -340,24 +340,6 @@
 	</script>
 	<script src="https://hk.feature.appledaily.com/travelseed/js/jquery-3.3.1.min.js"></script>
 
-    <!-- 1x1 -->
-    <script type='text/javascript' src="https://imp.nextmedia.com/js/nxm_tr_v19s.js?t=1"></script>
-    <script type="text/javascript" src="https://static.omoplanet.com/WebSDK/v3.3.1/omo-sdk-3.3.1.min.js"></script>
-
-    <!-- END 1x1 -->
-
-
-    <script>
-    var _comscore = _comscore || [];
-    _comscore.push({ c1: "2", c2: "8028476" });
-    (function() {
-        var s = document.createElement("script"), el = document.getElementsByTagName("script")[0]; 
-        s.async = true;
-        s.src = (document.location.protocol == "https:" ? "https://sb" : "http://b") + ".scorecardresearch.com/beacon.js";
-        el.parentNode.insertBefore(s, el);
-    })();
-    </script>
-    <noscript><img src="http://b.scorecardresearch.com/p?c1=2&c2=8028476&cv=2.0&cj=1" /></noscript>
 
 
     <script>
@@ -370,16 +352,7 @@
         })(navigator.userAgent || navigator.vendor || window.opera);
         return check;
     }
-    var OMOSDK = new OMO({
-        appId: "5b445285cdc31a004262112d",
-        language: "zh",
-        region: "HK",
-        i18n: {
-            "COMMENTS": "留言",
-        },
-        authenticationServerUrl: 'https://auth.appledaily.com'
 
-    });
 
     var currentLevel = -1;
 
@@ -2900,129 +2873,6 @@ function setupAnvato(id){
     anvatoList.push(anvp1);
 
 }
-
-$(document).ready(function(){
-
-    setupAnvato('157379')
-
-});
-</script>
-
-
-<script type="text/javascript">
-
-    function setupCommentModule(id){
-        var commentModule = new OMOSDK.commentModule({
-            poi: 'ts-article-'+id,
-            limit: 10,
-            initialLimit: 10,
-        });
-        commentModule.showCommentUI(document.querySelector("#commentModule[data-id='"+id+"']"));
-    }
-    function setUpcomingSlider(id){
-        if(window.mobilecheck()){
-            $(".upcoming-slider[data-id='"+id+"']").lightSlider({
-                item: 2,
-                controls: false
-            });
-        }
-    }
-    setupCommentModule('157379');
-    setUpcomingSlider('157379');
-    
-
-    var popupSlider = undefined;
-    function showDialog(slide){
-        $(".images-popup").removeClass('hidden');
-
-        if(popupSlider==undefined){
-            popupSlider = $("#popupSlider").lightSlider({
-                item: 1,
-                controls: false,
-                pager: false,
-                adaptiveHeight:true,
-                enableDrag: false,
-                loop: true,
-                onAfterSlide: function(el){
-                    $("#popupCaption").html($("#popupSlider .active").data('caption'));
-                },
-                onSliderLoad: function(){
-                    window.dispatchEvent(new Event('resize'));
-                }
-            });
-        }
-        popupSlider.goToSlide(slide);
-    }
-    function nextSlide(){
-        popupNextSlide();
-    }
-    function prevSlide(){
-        popupSlider.goToPrevSlide();
-    }
-    function dismissDialog(){
-        $(".images-popup").addClass('hidden');
-    }
-    function popupNextSlide(){
-        popupSlider.goToNextSlide();
-    }
-
-    function bookmark(id, title){
-
-        if(!isLogin()){
-            login();
-        }else{
-            var addUrl = 'https://hk.feature.appledaily.com/travelseed/bookmark/_account_/add/_id_'.replace("_account_", OMOSDK.auth().getUserInfo().currentAccount.accountId).replace("_id_", id);
-            var gender = OMOSDK.auth().getUserInfo().currentAccount.gender;
-
-            ga('send', 'event', 'bookmark', 'click_bookmark_article', title.trim());
-
-            $.ajax({
-                url: addUrl,
-                method: "POST",
-                data: {
-                    "omo_account_id": OMOSDK.auth().getUserInfo().currentAccount.accountId,
-                    "omo_email":OMOSDK.auth().getUserInfo().currentAccount.email,
-                    "omo_first_name" : OMOSDK.auth().getUserInfo().currentAccount.firstName,
-                    "omo_last_name":OMOSDK.auth().getUserInfo().currentAccount.lastName,
-                    "omo_display_name":OMOSDK.auth().getUserInfo().currentProfile.displayName,
-                    "omo_birthday": OMOSDK.auth().getUserInfo().currentAccount.birthday,
-                    "omo_gender": gender
-                },
-                success: function(res){
-                    if(res.success){
-                        ga('send', 'event', 'bookmark', 'success_bookmark_article', title.trim());
-                        alert("成功。");
-                    }
-                }
-            });
-        }
-
-    }
-
-    function share(url, title){
-
-    }
-
-
-    var clipboard = null;
-
-    $(document).ready(function(){
-
-        clipboard = new ClipboardJS("#copy");
-        clipboard.on('success', function(e){
-            alert('連結已複製');
-            e.clearSelection();
-        });
-
-        $("#lightSlider").lightSlider({
-            item: 1,
-            controls: false,
-            pager: false,
-            adaptiveHeight:true
-        });
-    });
-
-</script>
 
 </body>
 </html>
