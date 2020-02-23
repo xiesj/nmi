@@ -1,0 +1,178 @@
+<html lang="en">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta charset="UTF-8">
+		<script src="crypto-js.min.js"></script>
+		<script src="jquery-3.3.1.min.js"></script>
+		<script type="text/javascript" src="janrain.common.lib-v1.1.js?v=20200112"></script>
+		<script type="text/javascript">
+			var jancli = new JanrainCli({
+				//clientid: 'e4f0e355-a03e-4a71-8447-3aec41ce94d2'
+				clientid: 'c4509fc6-8f41-4d14-bfb6-a8ad79d0e14f'
+			});
+			//jancli.setRedirectUri('https://oidcdebugger.com/debug');
+			//jancli.setRedirectUri('https://dev-hk.nextmgz.com/redirect_uri/janrain.html');
+			jancli.setRedirectUri('https://dev-hk.nextmgz.com/redirect_uri/janrain-demo.html');
+		</script>
+
+		<script>
+			! function(e, t, a) {
+				var c = e.head || e.getElementsByTagName("head")[0],
+					n = e.createElement("script");
+				n.async = !0, n.defer = !0, n.type = "text/javascript", n.src = t + "/static/js/chat_widget.js?config=" + JSON.stringify(
+					a), c.appendChild(n)
+			}(document, "https://app.engati.com", {
+				bot_key: "22454f7b3aa448f1",
+				launch_flow: "FA41566B451D40D7AF350E2F0615783C",
+				welcome_msg: false,
+				branding_key: "default",
+				server: "https://app.engati.com",
+				e: "p"
+			});
+		</script>
+		<script>
+			$.ready(function () {
+				console.log(document.getElementById("engt-launcher-button"))
+				document.getElementById("engt-launcher-button").onclick = function(e) {
+					sendValueToChatbot({})
+				};
+				
+				var gotparams = new URL(window.location).searchParams.get("code") || '';
+				if (gotparams !== '') {
+					document.getElementById('code').innerHTML = gotparams
+					jancli.setAuthSession(gotparams).then(function(res) {
+						document.getElementById('setauthresp').innerHTML = res
+						if (res == "done") {
+							document.getElementById('setauthresult').innerHTML = 'success'
+							document.getElementById('btnlogin').disabled = true;
+							checkLogin()
+						}
+					});
+						
+				} else {
+					checkLogin()
+				}
+			})
+		
+			function checkLogin() {
+				//check cookit loggedin
+				var logstatus = jancli.isLoggedIn();
+				document.getElementById('cookiestatus').innerHTML = logstatus
+				var auth_token = getJanrainCookie(authtoken_cookie_name);
+				document.getElementById('cookietoken').innerHTML = auth_token
+				if (logstatus == "true") {
+					jancli.getProfileInfo().then(function(res) {
+						document.getElementById('janrain_id').innerHTML = res.janrain_id
+						document.getElementById('age_group').innerHTML = res.age_group
+						document.getElementById('gender').innerHTML = res.gender
+						document.getElementById('display_name').innerHTML = res.display_name
+						document.getElementById('display_img').innerHTML = "<img src='" + res.display_img + "'/>"
+						
+						document.getElementById('travellink').href = 'janrain-engati-travel-demo.html?display_name=' + res.display_name + '&janrain_id=' + res.janrain_id
+						document.getElementById('travellink').style.display = 'block';
+						document.getElementById('btnshowprofile').disabled = false;
+						document.getElementById('btnupdgeo').disabled = false;
+						document.getElementById('btnlogout').disabled = false;
+						document.getElementById('btnmemportal').disabled = false;
+						document.getElementById('btnlogin').disabled = true;
+						sendValueToChatbot({
+							'user.janrain_id': janrain_id,
+							'user.age_group': age_group,
+							'user.gender': gender,
+							'user.display_name': display_name,
+							'user.display_img': display_img,
+						})
+					}, function(err) {});
+		
+				} else if (logstatus == "needcheck") {
+					jancli.isAuthTokenActive().then(function(res) {
+						document.getElementById('cookiecheckstatus').innerHTML = res
+					}, function(err) {});
+				} else {
+					console.log('not logged in');
+					document.getElementById('cookiestatus').innerHTML = 'not logged in';
+				}
+			}
+		
+			function updateLocation() {
+				//update geo location
+				var xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function() {
+					if (this.readyState == 4 && this.status == 200) {
+						var obj = JSON.parse(this.responseText);
+						jancli.updateGeoLocation(obj.countryCode).then(function(res) {
+							// document.getElementById('loggedstatus').innerHTML += "<br/>update Geo Location result: " + res;
+						});
+					}
+				};
+				xhttp.open("GET", 'https://auth.omoplanet.com/api/v7/geo', true);
+				xhttp.send();
+			}
+			
+			function sendValueToChatbot(params) {
+				if (EngtChat) {
+					chatWidget.launchBot()
+					for (var key in params) {
+						var postback = "node_B48266D33B__FA41566B451D40D7AF350E2F0615783C||data_" + key + "=" + params[key]
+						EngtChat.sendMessage({
+							"postback": postback,
+							"type": "postback"
+						}, 'postback')
+					}
+					EngtChat.sendMessage({
+						"postback": "node_721A210CEA__FA41566B451D40D7AF350E2F0615783C",
+						"type": "postback"
+					}, 'postback')
+				}
+			}
+			
+			function sendCustomData() {
+						document.getElementById('travellink').href = 'janrain-engati-travel-demo.html?display_name=' + document.getElementById('custom.display_name').value + '&janrain_id=' + document.getElementById('custom.janrain_id').value
+						document.getElementById('travellink').style.display = 'block';
+				sendValueToChatbot({
+					'user.janrain_id': document.getElementById('custom.janrain_id').value,
+					'user.age_group': document.getElementById('custom.age_group').value,
+					'user.gender': document.getElementById('custom.gender').value,
+					'user.display_name': document.getElementById('custom.display_name').value,
+					'user.display_img': document.getElementById('custom.display_img').value,
+				})
+			}
+		</script>
+		
+	</head>
+	<body style="padding: 10;">
+		<h1>code</h1>
+		<div>code: <span id="code">no code</span></div>
+		<div>set auth resp: <span id="setauthresp"></span></div>
+		<div>set auth result: <span id="setauthresult"></span></div>
+
+		<h1>cookie</h1>
+		<div>cookie token: <span id="cookietoken"></span></div>
+		<div>cookie status: <span id="cookiestatus"></span></div>
+		<div>cookie check status: <span id="cookiecheckstatus"></span></div>
+
+		<h1>user info</h1>
+		<div>user janrain id: <span id="janrain_id"></span></div>
+		<div>user age group: <span id="age_group"></span></div>
+		<div>user gender: <span id="gender"></span></div>
+		<div>user display name: <span id="display_name"></span></div>
+		<div>user display img: <span id="display_img"></span></div>
+
+		<h1>action</h1>
+		<button id="btnlogin" onclick="jancli.redirectLogin();">Login</button>
+		<button id="btnshowprofile" onclick="jancli.showProfile();" disabled=true>Show Profile</button>
+		<button id="btnmemportal" onclick="jancli.showMemPortal();" disabled=true>Member Portal</button>
+		<button id="btnupdgeo" onclick="updateLocation();" disabled=true>Update Geo Location</button>
+		<button id="btnlogout" onclick="jancli.Logout();" disabled=true>Logout</button>
+		<div><a id="travellink" target="_blank" href="" style="display: none;">go to travel page</a></div>
+		<h1>custom data</h1>
+		
+		<div>janrain_id: <input type="text" value="11111111111" id="custom.janrain_id"></div>
+		<div>age_group: <input type="text" value="15-22" id="custom.age_group"></div>
+		<div>gender: <input type="text" value="male" id="custom.gender"></div>
+		<div>display_name: <input type="text" value="Alan Xie" id="custom.display_name"></div>
+		<div>display_img: <input type="text" value="https://www.baidu.com/img/bd_logo1.png" id="custom.display_img"></div>
+		<button onclick="sendCustomData()">Send Data</button>
+		
+	</body>
+</html>
